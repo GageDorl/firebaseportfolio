@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photographer Appointment Scheduler</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Photography Portfolio</h1>
+        <p>Capturing moments, telling stories</p>
+    </header><br>
+
+
+    <section class="gallery">
+        <div class="photo">
+            <img src="https://picsum.photos/400/200" alt="Beautiful landscape">
+            <p>Landscape Photography</p>
+        </div>
+        <div class="photo">
+            <img src="https://picsum.photos/400/200" alt="City skyline at night">
+            <p>City Photography</p>
+        </div>
+        <div class="photo">
+            <img src="https://picsum.photos/400/200" alt="Mountain scenery">
+            <p>Mountain Photography</p>
+        </div>
+        <div class="photo">
+            <img src="https://picsum.photos/400/200" alt="Sunset over the ocean">
+            <p>Ocean Photography</p>
+        </div>
+        <!-- Add more photos as needed -->
+    </section>
+    <div class="form-container">
+        <h1>Schedule an Appointment</h1>
+        <form id="appointmentForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required><br><br>
+            <label for="date">Date:</label>
+            <input type="date" id="date" required><br><br>
+            <label for="time">Time:</label>
+            <input type="time" id="time" required><br><br>
+            <button type="submit">Book Appointment</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Name. All Rights Reserved.</p>
+    </footer>
+    
+
+    <script>
+        document.getElementById("appointmentForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const date = document.getElementById("date").value;
+            const time = document.getElementById("time").value;
+
+            const response = await fetch("/book", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, date, time }),
+            });
+
+            const result = await response.text();
+            alert(result);
+        });
+    </script>
+</body>
+</html>
