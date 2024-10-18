@@ -5,6 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photographer Appointment Scheduler</title>
     <link type="text/css" rel="stylesheet" href="style.css">
+    <script src="../config.js"></script>
+    <script type="module" defer>
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js";
+    // import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.2/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    // const analytics = getAnalytics(app);
+
+    //   Analytics tags if desired
+    //   gtag('config', 'GA_MEASUREMENT_ID', {
+    //   cookie_domain: 'yourappname.web.app',
+    //   cookie_flags: 'SameSite=None;Secure',
+    // });
+    document.getElementById('addAppointmentForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+
+      // Add the project to Firestore
+      try {
+        const docRef = await addDoc(collection(db, 'appointments'), {
+          name: name,
+          email: email,
+          date: date,
+          time: time
+        });
+        console.log('Appointment added with ID: ', docRef.id);
+        alert('Appopintment added successfully!');
+        fetchAppointments();
+      } catch (error) {
+        console.error('Error adding appointments: ', error);
+        alert('Error adding appointments. Please check the console for details.');
+      }
+    });
+
+    // View Projects List
+    const appointmentList = document.getElementById('appointmentList');
+
+    // Fetch projects from Firestore after initialization
+    const fetchAppointments = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'appointments'));
+        appointmentList.innerHTML = ''; // Clear existing list before populating
+        querySnapshot.forEach((doc) => {
+          const appointment = doc.data();
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `Name: ${appointment.name}<br>Email: ${appointment.email}<br>Date: ${appointment.date}<br>Time: ${appointment.time}`;
+          appointmentList.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error('Error getting projects: ', error);
+        // alert('Error getting projects. Please try again.');
+      }
+    };
+
+    // Call fetchProjects after initialization
+    fetchAppointments();
+
+  </script>
 </head>
 <body>
     <header>
@@ -34,7 +99,7 @@
     </section>
     <div class="form-container">
         <h1>Schedule an Appointment</h1>
-        <form id="appointmentForm">
+        <form id="addAppointmentForm">
             <label for="name">Name:</label>
             <input type="text" id="name" required><br><br>
             <label for="email">Email:</label>
@@ -46,31 +111,11 @@
             <button type="submit">Book Appointment</button>
         </form>
     </div>
+    <h1>Appointments</h1>
+    <div id="appointmentList"></div>
 
     <footer>
         <p>&copy; 2024 ITM 101. All Rights Reserved.</p>
     </footer>
-    
-
-    <script>
-        document.getElementById("appointmentForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const date = document.getElementById("date").value;
-            const time = document.getElementById("time").value;
-
-            const response = await fetch("/book", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name, email, date, time }),
-            });
-
-            const result = await response.text();
-            alert(result);
-        });
-    </script>
 </body>
 </html>
